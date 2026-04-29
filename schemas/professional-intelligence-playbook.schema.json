@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://socioprophet.io/schemas/delex/professional-intelligence/playbook.schema.json",
+  "title": "ProfessionalIntelligencePlaybook",
+  "type": "object",
+  "required": ["apiVersion", "kind", "metadata", "intent", "inputs", "steps", "policyChecks", "agentRoles", "acceptance"],
+  "properties": {
+    "apiVersion": { "const": "delex.socioprophet.io/v1alpha1" },
+    "kind": { "const": "ProfessionalIntelligencePlaybook" },
+    "metadata": {
+      "type": "object",
+      "required": ["id", "title", "vertical", "status", "ownerRepos"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "vertical": { "type": "string" },
+        "status": { "type": "string", "enum": ["seed", "draft", "active", "deprecated"] },
+        "ownerRepos": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "intent": {
+      "type": "object",
+      "required": ["problem", "outcome", "demoValue"]
+    },
+    "inputs": {
+      "type": "object",
+      "required": ["required"]
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "capability", "action", "evidenceRequired"],
+        "properties": {
+          "capability": {
+            "type": "string",
+            "enum": [
+              "institution-context-engine",
+              "institution-graph",
+              "agent-fabric",
+              "conflict-engine",
+              "obligation-ledger",
+              "ethical-walls",
+              "workspace-os",
+              "adoption-telemetry",
+              "evidence-plane",
+              "sherlock-search"
+            ]
+          }
+        }
+      }
+    },
+    "acceptance": {
+      "type": "object",
+      "required": ["requiredEvidence", "kpis"]
+    }
+  }
+}

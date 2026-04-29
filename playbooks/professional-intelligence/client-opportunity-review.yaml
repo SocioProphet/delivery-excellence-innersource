@@ -1,0 +1,100 @@
+apiVersion: delex.socioprophet.io/v1alpha1
+kind: ProfessionalIntelligencePlaybook
+metadata:
+  id: client-opportunity-review
+  title: Client Opportunity Review
+  vertical: professional-services
+  status: seed
+  ownerRepos:
+    - SocioProphet/delivery-excellence-innersource
+    - SocioProphet/prophet-platform
+    - SocioProphet/prophet-workspace
+    - SocioProphet/sherlock-search
+    - SocioProphet/regis-entity-graph
+    - SocioProphet/policy-fabric
+
+intent:
+  problem: Teams need a governed way to review new client or project opportunities against institutional context, relationships, policy constraints, and delivery fit.
+  outcome: Generate a sourced opportunity packet and route it to reviewers with evidence and adoption telemetry.
+  demoValue: Shows relationship intelligence, institution context, search, graph, agent output, workspace effects, and evidence.
+
+inputs:
+  required:
+    - clientOrOrganization
+    - opportunityDescription
+    - sourceChannel
+    - practiceArea
+  optional:
+    - sourceDocument
+    - relatedParties
+    - priorInteractions
+    - deliveryTeam
+
+steps:
+  - id: opportunity-normalization
+    capability: institution-context-engine
+    action: Normalize organization, opportunity, practice area, source channel, and related parties.
+    evidenceRequired: true
+  - id: context-enrichment
+    capability: sherlock-search
+    action: Retrieve internal and permitted context with source citations.
+    evidenceRequired: true
+  - id: relationship-map
+    capability: institution-graph
+    action: Map known relationships, prior interactions, and related institutional context.
+    evidenceRequired: true
+  - id: policy-check
+    capability: conflict-engine
+    action: Check policy constraints, confidentiality obligations, conflict signals, and delivery constraints.
+    approvalGate: review-approval
+    evidenceRequired: true
+  - id: review-packet
+    capability: agent-fabric
+    action: Generate a sourced opportunity review packet.
+    evidenceRequired: true
+  - id: workroom-create
+    capability: workspace-os
+    action: Create or update a workroom with packet, evidence, approvals, tasks, and policy context.
+    evidenceRequired: true
+  - id: adoption-emit
+    capability: adoption-telemetry
+    action: Emit agent_output_accepted, edited, rejected, or playbook_completion event.
+    evidenceRequired: true
+
+policyChecks:
+  - internalPolicyCheck
+  - confidentialityCheck
+  - conflictSignalCheck
+  - aiUseRestrictionCheck
+  - informationBarrierCheck
+
+agentRoles:
+  - id: opportunity-review-agent
+    purpose: Produce a sourced, reviewable opportunity packet.
+    toolGrants:
+      - sherlock.search
+      - institution-graph.lookup
+      - policy-fabric.evaluate
+      - model-router.route
+      - evidence.emit
+  - id: relationship-agent
+    purpose: Surface relationship paths and prior institutional context.
+    toolGrants:
+      - institution-graph.paths
+      - memory-mesh.recall
+      - workspace.link-context
+
+acceptance:
+  requiredEvidence:
+    - context-pack
+    - relationship-map
+    - policy-check-report
+    - opportunity-review-packet
+    - workspace-created-or-updated
+    - adoption-event
+  kpis:
+    - reviewCycleTime
+    - relationshipCoverage
+    - sourceCitationCoverage
+    - policyCheckCompletionRate
+    - packetAcceptanceRate

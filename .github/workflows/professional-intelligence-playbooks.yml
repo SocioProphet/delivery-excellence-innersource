@@ -1,0 +1,38 @@
+name: Professional Intelligence Playbooks
+
+on:
+  pull_request:
+    paths:
+      - 'playbooks/professional-intelligence/**'
+      - 'schemas/professional-intelligence-playbook.schema.json'
+      - 'scripts/validate_professional_intelligence_playbooks.py'
+      - '.github/workflows/professional-intelligence-playbooks.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'playbooks/professional-intelligence/**'
+      - 'schemas/professional-intelligence-playbook.schema.json'
+      - 'scripts/validate_professional_intelligence_playbooks.py'
+      - '.github/workflows/professional-intelligence-playbooks.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-playbooks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install validation dependencies
+        run: python3 -m pip install pyyaml jsonschema
+
+      - name: Validate Professional Intelligence playbooks
+        run: python3 scripts/validate_professional_intelligence_playbooks.py

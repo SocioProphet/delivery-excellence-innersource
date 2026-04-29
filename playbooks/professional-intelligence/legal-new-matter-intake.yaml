@@ -1,0 +1,103 @@
+apiVersion: delex.socioprophet.io/v1alpha1
+kind: ProfessionalIntelligencePlaybook
+metadata:
+  id: legal-new-matter-intake
+  title: Legal New Matter Intake
+  vertical: legal
+  status: seed
+  ownerRepos:
+    - SocioProphet/delivery-excellence-innersource
+    - SocioProphet/prophet-platform
+    - SocioProphet/prophet-workspace
+    - SocioProphet/policy-fabric
+    - SocioProphet/contractforge
+    - SocioProphet/regis-entity-graph
+
+intent:
+  problem: New legal matters require entity resolution, conflicts review, obligation review, information barrier decisions, approvals, and workspace creation.
+  outcome: Create a governed matter workroom with conflict and obligation evidence before material work begins.
+  demoValue: Shows institution context, policy, graph, workspace, agent execution, and evidence in one workflow.
+
+inputs:
+  required:
+    - requestingUser
+    - clientName
+    - matterDescription
+    - opposingParties
+    - relatedEntities
+    - jurisdiction
+    - requestedStartDate
+  optional:
+    - clientGuidelines
+    - proposedTeam
+    - documents
+    - billingTerms
+
+steps:
+  - id: intake-normalization
+    capability: institution-context-engine
+    action: Normalize client, matter, party, and jurisdiction fields into institution entities.
+    evidenceRequired: true
+  - id: entity-resolution
+    capability: institution-graph
+    action: Resolve client, opposing party, beneficial owner, and related-party candidates.
+    evidenceRequired: true
+  - id: conflict-screen
+    capability: conflict-engine
+    action: Run conflict checks across entity graph, prior matters, relationships, restrictions, and proposed team.
+    approvalGate: conflicts-review
+    evidenceRequired: true
+  - id: obligation-review
+    capability: obligation-ledger
+    action: Extract applicable client terms, AI-use constraints, billing rules, confidentiality obligations, and jurisdictional constraints.
+    approvalGate: terms-review
+    evidenceRequired: true
+  - id: wall-recommendation
+    capability: ethical-walls
+    action: Recommend workspace, memory, graph, document, and agent access boundaries.
+    approvalGate: wall-approval
+    evidenceRequired: true
+  - id: workspace-create
+    capability: workspace-os
+    action: Create or update matter workroom with scoped documents, tasks, approvals, policies, and agent grants.
+    evidenceRequired: true
+  - id: adoption-emit
+    capability: adoption-telemetry
+    action: Emit playbook_completion and demo_acceptance events when acceptance criteria are met.
+    evidenceRequired: true
+
+policyChecks:
+  - conflictReviewRequired
+  - clientConfidentialityRequired
+  - aiUseRestrictionCheck
+  - informationBarrierCheck
+  - billingGuidelineCheck
+
+agentRoles:
+  - id: intake-agent
+    purpose: Normalize intake and prepare review packet.
+    toolGrants:
+      - institution-graph.lookup
+      - policy-fabric.evaluate
+      - contractforge.obligations.lookup
+      - workspace.create-draft
+  - id: conflicts-agent
+    purpose: Prepare conflict candidates and human review evidence.
+    toolGrants:
+      - regis.entity-resolution
+      - conflict-engine.screen
+      - evidence.emit
+
+acceptance:
+  requiredEvidence:
+    - conflict-check-report
+    - obligation-review-report
+    - wall-recommendation
+    - workspace-created-or-updated
+    - adoption-event
+  kpis:
+    - intakeCycleTime
+    - conflictReviewCycleTime
+    - policyBlockRate
+    - workspaceCreationTime
+    - humanEscalationRate
